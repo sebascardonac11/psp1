@@ -9,5 +9,5 @@ GITHUB
 	User:	sebascardonac11
 
 Heroku
-	URL: https://sebascardonac-psp1.herokuapp.com/
+	URL: https://placebopsp1.herokuapp.com/
 	User: sebascardonac11@gmail.com
