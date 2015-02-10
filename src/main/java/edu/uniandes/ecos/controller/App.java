@@ -9,8 +9,6 @@ package edu.uniandes.ecos.controller;
  *
  * @author sebascardonac11
  */
-
-
 import edu.uniandes.ecos.Calculos;
 import edu.uniandes.ecos.view.MainView;
 import java.io.IOException;
@@ -29,15 +27,17 @@ import java.util.logging.Logger;
 /**
  * Main Application
  */
-public class App extends HttpServlet{
+public class App extends HttpServlet {
 
     public static void main(String[] args) {
-        Server server = new Server(Integer.valueOf(System.getenv("PORT")));
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        server.setHandler(context);
-        context.addServlet(new ServletHolder(new App()), "/*");
         try {
+
+            Server server = new Server(Integer.valueOf(System.getenv("PORT")));
+            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            context.setContextPath("/");
+            server.setHandler(context);
+            context.addServlet(new ServletHolder(new App()), "/*");
+
             server.start();
             server.join();
         } catch (Exception ex) {
@@ -49,103 +49,76 @@ public class App extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        MainView.showHome(req,resp);
-        MainView.showResults(req,resp,0.0," ",0.0);       
+        MainView.showHome(req, resp);
+        //MainView.showResults(req,resp,0.0," ",0.0);       
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                
+
         try {
-            MainView.showHome(req,resp);
+            MainView.showHome(req, resp);
             consoleInput(req, resp);
         } catch (Exception ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
-   
+
     /**
      * Method to set the console input for the numbers
      */
     public void consoleInput(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         //System.out.println("Por favor, ingrese la cantidad de numeros que desea ingresar:");
+        // X= 130.0-650.0-99.0-150.0-128.0-302.0-95.0-945.0-368.0-961.0
+        // Y= 186.0-699.0-132.0-272.0-291.0-331.0-199.0-1890.0-788.0-1601.0
         //Scanner input = new Scanner(System.in);
-        String calc = req.getParameter("calc");
+        String lst1 = req.getParameter("lst1");
+        String lst2 = req.getParameter("lst2");
 
-        String[] strElements = calc.split(" ");
+        String Yk = req.getParameter("yk");
+        
         Double nextElement = 0D;
-        LinkedList<Double> numbersList = new LinkedList<Double>();
-         LinkedList<Double> x = new LinkedList<Double>();
-        x.add(130.0);
-        x.add(650.0);
-        x.add(99.0);
-        x.add(150.0);
-        x.add(128.0);
-        x.add(302.0);
-        x.add(95.0);
-        x.add(945.0);
-        x.add(368.0);
-        x.add(961.0);
-        LinkedList<Double> y = new LinkedList<Double>();
-        /* y.add(163.0);
-         y.add(765.0);
-         y.add(141.0);
-         y.add(166.0);
-         y.add(137.0);
-         y.add(355.0);
-         y.add(136.0);
-         y.add(1206.0);
-         y.add(433.0);
-         y.add(1130.0);
-        */
-        y.add(186.0);
-        y.add(699.0);
-        y.add(132.0);
-        y.add(272.0);
-        y.add(291.0);
-        y.add(331.0);
-        y.add(199.0);
-        y.add(1890.0);
-        y.add(788.0);
-        y.add(1601.0);
-        Calculos cal= new Calculos(numbersList, numbersList);
-       // StatisticCalculator calculator = new StatisticCalculator();
 
-        for (String strElement : strElements) {
+        LinkedList<Double> x = new LinkedList<Double>();
+        LinkedList<Double> y = new LinkedList<Double>();
+
+        // StatisticCalculator calculator = new StatisticCalculator();
+        String[] strElements1 = lst1.split("-");
+        String[] strElements2 = lst2.split("-");
+        for (int i = 0; i < strElements1.length; i++) {
             try {
-                nextElement = Double.valueOf(strElement);
-                numbersList.add(nextElement);
-                
-            }catch(NumberFormatException ex){
+                nextElement = Double.valueOf(strElements1[i]);
+                x.add(nextElement);
+                nextElement = Double.valueOf(strElements2[i]);
+                y.add(nextElement);
+            } catch (NumberFormatException ex) {
                 MainView.error(req, resp);
             }
         }
-
+        nextElement = Double.valueOf(Yk);
+        Calculos cal = new Calculos(x, y);
         //calculator.setInputData(numbersList);
-        
-        MainView.showResults(req, resp, cal.getB0(), numbersList.toString(), cal.getB1());
+        MainView.showResults(req, resp, cal.getB0(),cal.getB1(),cal.getR1(),cal.getR2(),cal.getYK(nextElement));
     }
 
     /**
      * Method to set the file input for the numbers
      */
     public void fileInput() {
-  /*      ClassLoader classLoader = this.getClass().getClassLoader();
-        FileInput inputReader = new FileInput();
-        inputReader.getFile(classLoader.getResource("inputs.txt").getFile());
-        inputReader.readNumbersFromFile();
-        LinkedList<Double> values = inputReader.getValuesFromFile();
+        /*      ClassLoader classLoader = this.getClass().getClassLoader();
+         FileInput inputReader = new FileInput();
+         inputReader.getFile(classLoader.getResource("inputs.txt").getFile());
+         inputReader.readNumbersFromFile();
+         LinkedList<Double> values = inputReader.getValuesFromFile();
 
-        StatisticCalculator calculator = new StatisticCalculator();
-        calculator.setInputData(values);
+         StatisticCalculator calculator = new StatisticCalculator();
+         calculator.setInputData(values);
         
-        System.out.println("Leyendo desde el archivo inputs.txt");
-        System.out.println("Lista: " + values.toString());
-        System.out.println("Media: " + calculator.calculateMean());
-        System.out.println("Desviacion Estandar: " + calculator.calculateStdDev());
-*/
+         System.out.println("Leyendo desde el archivo inputs.txt");
+         System.out.println("Lista: " + values.toString());
+         System.out.println("Media: " + calculator.calculateMean());
+         System.out.println("Desviacion Estandar: " + calculator.calculateStdDev());
+         */
     }
 
 }
